@@ -136,7 +136,7 @@ git add .                               (Selectionne tout les fichier)
 
 CREATION DU COMMIT
 
-git commit -m Commentaire               (Ecrire un commentaire est oligatoir)
+git commit -m "Commentaire"              (Ecrire un commentaire entre guillemet est oligatoir)
 
 
 
@@ -205,7 +205,6 @@ ________________________________________________________________________________
 /// LES BIBLIOTHEQUES ET DIRECTIVE DE PREPROCESSEUR :
 
 
-
 ///Les Bibliotheques :
 
 Les bibliothèques comprennes les fonctions de base stocker avec L'IDE.
@@ -218,6 +217,10 @@ pour inclure un fichier.h dans le dossier ou est installer l'IDE on utilise < >
 #include <time.h>
 #include <string.h>
 #include <stddef.h>
+
+
+
+
 
 
 
@@ -234,6 +237,11 @@ pour inclure un fichier.h dans le dossier de votre projet on utilise " "
 (#define) remplace par 100 toute les fonctions qui prennent taille_max comme argument !
 Permet de fluidifié le code et un meilleur controle également.
 
+
+
+
+///Exemple
+
 #define COUCOU() printf("Coucou");
 #define AirDuCaree (taille_max * taille_mini)
 
@@ -247,6 +255,38 @@ int fonction (int longeur, int largeur)
  COUCOU()
 
  printf("la valeur de l*L = %d",fonction(taille_max,taille_mini));
+
+
+
+
+///Autres Exemples
+
+
+ Il est possible de mettre plusieurs lignes de code à la fois. Il suffit de placer un\  avant chaque nouvelle ligne.
+
+
+ #define RACONTER_SA_VIE()   printf("Coucou, je m'appelle Brice\n"); \
+                            printf("J'habite a Nice\n"); \
+                            printf("J'aime la glisse\n");
+
+
+
+ Il est possible aussi de créer une macro qui prend plusieurs paramètres.
+
+ #define MAJEUR(age, nom) if (age >= 18) \
+                    printf("Vous etes majeur %s\n", nom);
+
+int main(int argc, char *argv[])
+{
+    MAJEUR(22, "Maxime")
+
+    return 0;
+}
+
+
+
+
+
 
 
 
@@ -289,8 +329,62 @@ Eviter les inclusions infinies avec :
 
 #endif
 
+
+
+
+
+
+
+
+/// les constantes prédéfinies par le processeur
+
+
+
+    __LINE__ donne le numéro de la ligne actuelle.
+
+    __FILE__ donne le nom du fichier actuel.
+
+    __DATE__ donne la date de la compilation.
+
+    __TIME__ donne l'heure de la compilation.
+
+
+Ca permet au programmeur de definir dans le code les endroids qui reste à deboguer. cela affichera à la lecture du code
+le fichier, la ligne de code, et autres informations necessaire.
+
+
+#include <stdio.h>
+
+// Définition de la macro DEBUG avec la valeur 1
+#define DEBUG 1
+
+// Vérifie si la macro DEBUG est définie (oui == 1)
+#ifdef DEBUG
+// Si DEBUG est définie, cette macro affichera les messages de débogage
+#define debug_print(fmt, ...) \
+            fprintf(stderr, "DEBUG: %s:%d: " fmt, __FILE__, __LINE__, __VA_ARGS__)
+#else
+// Si DEBUG n'est pas définie, cette macro sera vide
+#define debug_print(fmt, ...) \
+            do {} while (0)
+#endif
+
+int main() {
+    int x = 10;
+    // Appel à la macro debug_print pour afficher un message de débogage
+    // Si DEBUG est définie, le message contiendra le numéro de ligne et le nom du fichier.
+    // ici on passe x comme argument juste pour montrer qu'on peut également prendre des variables en comptes.
+    debug_print("x = %d\n\n", x);
+
+
+
+
+
+
+
 ____________________________________________________________________________________________________________________________________________________________________________________________________
 /// MISE EN PAGE :
+
 
 retour à la ligne : \n          /**"Vois comme c'est magique ! Aurai-tu découvert une nouvelle passion ? Ou serait-ce plus que ça...
                                     Trêve de plaisanterie !
@@ -325,6 +419,8 @@ ctrl+shift+c = tout ce qui est sélectionner en commentaire d'une ligne
 
 ____________________________________________________________________________________________________________________________________________________________________________________________________
 /// LES VARIALBES ET SPECIFICATEURS DE FORMAT (DRAPEAUX):
+
+
 
 const : (VARIABLE_CONSTANTE_QUI_NE_SERA_JAMAIS_MODIFIABLE_APRES_INITIALISATION_!_A_ECRIRE_EN_MAJUSCULE);
 
@@ -626,83 +722,50 @@ else
 
 
 ____________________________________________________________________________________________________________________________________________________________________________________________________
-///LES POINTEURS voir dossier XXX
-
-Les pointeurs sont très utiles ! notament pour adresser des valeurs à des variables
-qui se trouvent en dehors de la fonction. En efet si il est possible d'utiliser return pour
-renvoyer la valeur d'une fonction cela ne marche qu'avec une valeur..
-Crée des variable global ? ni penses meme pas vu le merdier que ca foutrait dans le code !
-Il nous reste la solution du printf si c'est pour afficher un resultat.
-Mais ca reste interne à la fonction.. ca ne modifiera pas les valeurs aux adresses demander
-comme les pointeurs peuvent le faire !
-
-une variable à une adresse mémoire !
-Un pointeur est une variable qui sert à stocker une adresse mémoire !
-
-    age désigne la valeur de la variable ;     "%p" pour l'adresse en hexa
-
-    &age désigne l'adresse de la variable.     "%d" pour l'adresse en binaire
-
-    Le type de la variable pointeur doit etre le meme que la variable dont il prend l'adresse ! (ici int).
-
-    Vocabulaire : on dit que le pointeur pointeurSurAge  pointe sur la variable age.
-
-    Attention à ne pas confondre les différentes significations de l'étoile !
-
-Lorsque vous déclarez un pointeur, l'étoile indique qu'on veut créer un pointeur :int *pointeurSurAge;  .
-En revanche, lorsqu'ensuite vous utilisez votre pointeur en écrivant printf("%d", *pointeurSurAge);
-cela ne signifie pas "Je veux créer un pointeur", mais :
-"Je veux la valeur de la variable sur laquelle pointe mon pointeurSurAge".
+///LES POINTEURS
 
 
+Un pointeur est une variable qui stock l'adresse memoire d'une autre variable.
+Cela permet le transfer, la modification et l'extraction de valeur dans des fonction qui prennent en compte des pointeurs.
+Ce qui est impossible sans pointeur ! Au mieux return peut renvoyer qu'une seul valeur.
 
 
+int nombre = 2;
 
-    ///EXEMPLE UTILISATION DE POINTEUR
+int *PtrA = &nombre;                      // Oublie pas de déclarer vers quelle adresse
+                                          // Le pointeur dans doit renvoyer la valeur !
 
-int nombre;
+printf("nombre : %d \n", nombre);         // 2.
+printf("nombre : %d \n",&nombre);         // Adresse de nombre (6422036).
 
-int* pointeur = &nombre; //l'etoile devant le pointeur sert à déclarer une variable de type pointeur retient bien que ormis pour afficher la valeur
-                        //de l'adresse vers quoi le pointeur pointe, il ne faut pas mettre l'etoile devant le pointeur ! tu as déjà déclarer la variable comme étant
-                       // de type pointeur , le programme sait donc qu'il doit renvoyer cette valeur quelque part ! n'oublie pas bien sur de déclarer vers quelle adresse
-                      // Le pointeur dans doit renvoyer la valeur ! sinon programme pas comprendre lol
-
-// Vous pouvez maintenant utiliser la variable nombre dans d'autres fonctions en passant son pointeur !
-
-int main()
- {                        // "pointeur" renvoie directement la valeur recu vers l'adresse de la variable à laquelle il pointe !
-                         //  mais ils ne stock pas cette valeur à son adresse !
-                        //   puisque la valeur qu'il stock c'est justement l'adresse vers laquelle il pointe !
-
-
-menu();
-
-choixdunombre(pointeur); // ici choix du nombre renverra une valeur qu'il donnera à la variable nombre !
-                         // pointeur est une variable de type pointeur qui renverra la valeur à l'adresse vers laquelle il pointe
-
-
-//printf("vous avez choisi le %d",nombre);
-
-
-printf("\n\n");
-
-
-choixdumot(&nombre); //les deux fonctionnes (pointeur)
-
-
-
-    return 0;
+void changementDeNombre(int *pointeur)    // Sans pointeur la valeur de nombre change uniquement DANS la fonction.
+{
+    *pointeur = 42;                       // Ici derefecement du pointeur pour acceder à la valeur sur laquelle il pointe.
+                                          // Voir explication plus bas.
 }
 
-     void choixdunombre(int* ptrNombre) ///lorsque vous appelez choixdunombre, vous permettez à cette fonction de modifier la valeur de la variable qu'elle prends en compte (pointeur).
-                                       /// Puis dans le main.c la variable pointeur qui est une variable de type pointeur lol va directement envoyer la valeur qu'on lui à envoyer
-                                      /// (via la fonction choixdunombre) à l'adresse vers laquelle il pointe ! en aucun cas il modifie ca propre valeur puisque sa valeur est une autre adresse
-                                     /// ici c'est celle de nombre ! c'est un exemple de son utilisation.. dans le cas present c'est un peu comme un relai, mais on aurait pu faire plus simple
-                                    /// en demandant à la fonction dans le main.c d'envoyer la valeur directement à l'adresse de nombre comme ceci : choixdunombre(int &nombre) .
+changementDeNombre(PtrA);
+
+printf("nombre : %d \n", nombre);        // 42.
+printf("nombre : %d \n",&PtrA);          // Adresse du pointeur (6422024).
+printf("nombre : %d \n", PtrA);          // Adresse sur laquelle pointe le pointeur (6422036).
+printf("nombre : %d \n",*PtrA);          // Valeur de l'adresse sur laquelle pointe le pointeur (42).
+
+
+Initialiser un pointeur à NULL dès le début, si on n'a pas d'autre valeur à lui donner, est fondamental !
+Si vous ne le faites pas, vous augmentez considérablement le risque d'erreur par la suite.
+
+
+
+
+///Autre exemple (voir JEU_DU_PENDU)
+
+
+ void choixdunombre(int* ptrNombre)
     {
      do {
-        scanf("%d", ptrNombre); ///scanf lis le nombre que ptrNombre doit envoyer à la variable pris en compte dans la fonction choixdunombre ! ici il l'envoie à "pointeur" qui fait le relai hors de la
-                                                 ///fonction et l'envoie à l'adresse de "nombre" !
+        scanf("%d", ptrNombre);
+
         if (*ptrNombre > 30 || *ptrNombre < 1)
            {
             printf("Veuillez selectionner un nombre entre 1 et 30 \n\n");
@@ -712,18 +775,55 @@ choixdumot(&nombre); //les deux fonctionnes (pointeur)
    }
 
 
+Dans la fonction choixdunombre, lorsque nous utilisons *ptrNombre,
+nous déréférençons le pointeur ptrNombre, ce qui signifie que nous accédons
+à la valeur stockée à l'adresse mémoire pointée par ptrNombre.
+Par exemple, dans les expressions *ptrNombre > 30 et *ptrNombre < 1,
+nous comparons la valeur stockée à cette adresse avec les valeurs 30 et 1 respectivement.
+
+En revanche, dans scanf("%d", ptrNombre);, nous passons simplement l'adresse mémoire pointée
+par ptrNombre à scanf, ce qui permet à scanf d'écrire la valeur saisie par l'utilisateur à cet emplacement mémoire.
+Nous n'avons pas besoin de déréférencer ptrNombre car scanf
+s'attend à recevoir une adresse mémoire où stocker la valeur saisie, pas la valeur elle-même.
 
 
 
 
 
 
+///pointeurs sur pointeurs
+
+
+#include <stdio.h>
+
+void ft_ultimate_ft(int *********nbr) {
+    *********nbr = 42; // Affecte la valeur 42 à l'entier pointé par nbr
+}
+
+int main() {
+    int x; // Déclare une variable entière
+    int *ptr1 = &x; // Pointeur vers x
+    int **ptr2 = &ptr1; // Pointeur vers ptr1
+    int ***ptr3 = &ptr2; // Pointeur vers ptr2
+    int ****ptr4 = &ptr3; // Pointeur vers ptr3
+    int *****ptr5 = &ptr4; // Pointeur vers ptr4
+    int ******ptr6 = &ptr5; // Pointeur vers ptr5
+    int *******ptr7 = &ptr6; // Pointeur vers ptr6
+    int ********ptr8 = &ptr7; // Pointeur vers ptr7
+
+    ft_ultimate_ft(&ptr8); // Appel de la fonction ft_ultimate_ft en passant l'adresse de ptr8
+
+    printf("%d\n", ********ptr8); // Affiche la valeur de l'entier pointé par ptr8 (devrait être 42)
+
+    return 0;
+}
 
 
 
-
-
-
+Utiliser des pointeurs sur d'autres pointeurs permet d'accéder à des données de manière indirecte en référençant des adresses mémoire.
+Chaque niveau de pointeur supplémentaire ajoute une indirection supplémentaire lors de l'accès aux données.
+Lors de la déclaration, chaque étoile (*) indique une indirection supplémentaire, et lors de l'utilisation,
+il faut déréférencer le bon nombre de fois pour accéder à la valeur souhaitée.
 
 
 
@@ -795,15 +895,14 @@ affichertableaudebg(tableaudebg,10);
 ///fonnction affichage d'un calcul sur tableau avec un return
 
 
-int sommetableau(int tableau1[], int tailletableau)            pareille !! la fonction prends toujours en compte le nom du tableau et sa taille !!
+int sommetableau(int tableau1[], int tailletableau)
 {
     float somme;
     int i= 0;
 
     for (; i<tailletableau; i++)
     {
-     somme += tableau1[i]; +=: C'est l'opérateur d'addition abrégé. a += b est équivalent à a = a + b.
-     Dans ce cas, cela signifie que la valeur actuelle de somme est augmentée de la valeur de tableau[i].
+     somme += tableau1[i];
     }
 
   return somme;
@@ -811,34 +910,24 @@ int sommetableau(int tableau1[], int tailletableau)            pareille !! la fo
 
 printf("la somme des valeurs du tableau est de : %d \n",sommetableau(tableaudebg,10));
 
+/* +=: C'est l'opérateur d'addition abrégé. a += b est équivalent à a = a + b.
+     Dans ce cas, cela signifie que la valeur actuelle de somme est augmentée de la valeur de tableau[i].*/
 
 
-/// version caca
-/*
-int moyennetableau(int *tableau1, int tailletableau)
-   {
-   float somme;
-   float moyenne;
-   int i;
 
 
-  for (i; i<tailletableau;i++)
-    {
-    somme += tableau1[i];
-    moyenne = somme/tailletableau;
-    }
-    return moyenne;
-}
-*/
-double moyenneTableau(int tableau[], int tailleTableau) ///Le changement de type de variable au sein d'une fonction, est appelé "cast" ou "conversion de type".
-{                                                      ///Plus précisément, (double)somme et (double)tailleTableau sont des castings qui convertissent
-                                                      ///la valeur de somme et tailleTableau en valeurs de type double. tres utiles pour la division notament !
+
+
+
+double moyenneTableau(int tableau[], int tailleTableau) //Le changement de type de variable au sein d'une fonction, est appelé "cast" ou "conversion de type".
+{                                                      //Plus précisément, (double)somme et (double)tailleTableau sont des castings qui convertissent
+                                                      //la valeur de somme et tailleTableau en valeurs de type double. tres utiles pour la division notament !
     int somme = 0;
     for(int i = 0; i < tailleTableau; i++)
     {
         somme += tableau[i];
     }
-    return (double)somme/(double)tailleTableau; la fonction doit toujours renvoyer le meme type de variable que la fonction elle meme !
+    return (double)somme/(double)tailleTableau;         la fonction doit toujours renvoyer le meme type de variable que la fonction elle meme !
 }
 printf("la moyenne des valeurs du tableau est de : %lf \n",moyenneTableau(tableaudebg,10));
 
@@ -1109,3 +1198,362 @@ int age = 27;         ///ATENTION SPRINTF REMPLACE LE TEXTE EXISTANT DANS LA CHA
 sprintf(chaine1, "%s tu viens d'avoir %d",chaine2,age); //ici sprintf prend en compte la chaine (chaine1) dans laquellle il va écrire.
                                    //ensuite, comme dans un printf, tu peux y ajouter ce qu'il te chante !!
 printf("%s",chaine1);
+
+
+
+
+_________________________________________________________________________________________________________________________________________________________________________________
+///LES STRUCTURES
+
+
+
+//Les structures sont commes des fonctions, a l'exception qu'elles sont définie dans le dossier .h
+//comme les prototypes.
+
+
+/// .h
+
+typedef struct Coordonnees Coordonnees; //Typedef est un alias de la structure. Evite le "struct" .
+                                       //Sans alias la structure doit etre crée avec "struct" devant elle.
+
+struct Coordonnees //Structure de type : coordonnees. N'oublie pas de lui donner un nom dans le main.
+ {
+ int x;  //Abscisses
+
+ int y; //Ordonnées
+
+ };  //ATTENTION pas oublier le point virgule après l'accolade
+
+
+/// .c
+
+ void initialiserCoordonnees(Coordonnees* pnt) //prend en compte un pointeur de type coordonnees,
+{                                              // qui s'appele pnt DANS la fonction.
+    pnt->x = 0;
+    pnt->y = 0; //comment on utilise un pointeur  sur variable dans une structure.
+}
+
+
+/// main.c
+
+int main(int argc, char *argv[])
+ {
+
+
+Coordonnees point = {0,0}; //Creation d'une variable de type coordonnees où point est le nom de la structure.
+
+printf("point x :%d\npoint y :%d\n",point.x,point.y); // x = 0 ; y = 0
+
+point.x = 10; //le point permet l'acces à l'interieur de la structure.
+
+point.y = 15;
+
+printf("point x :%d\npoint y :%d\n",point.x,point.y); // x = 10 ; y = 15
+
+initialiserCoordonnees(&point);
+
+printf("point x :%d\npoint y :%d\n",point.x,point.y); // x = 0 ; y = 0
+
+
+
+///Autre exemple
+
+
+struct Date {
+    int jour;
+    int mois;
+    int annee;
+};
+
+
+struct Personne
+{
+char nom[20];
+
+char prenom[20];
+
+struct Date date_de_naissance; //exemple d'une structure dans une structure
+};
+
+comment y acceder :
+
+personne1.date_naissance.jour = 15;
+personne1.date_naissance.mois = 6;
+personne1.date_naissance.annee = 1990;
+
+//petit exercisse de remplissage
+
+struct Personne resident[3];
+
+int taille_tableau = sizeof(resident) / sizeof(resident[0]);
+/*Ici, sizeof(resident) donne la taille totale du tableau en octets,
+  et sizeof(resident[0]) donne la taille d'un élément individuel du tableau.
+  En divisant la taille totale par la taille d'un élément,
+  vous obtenez le nombre total d'éléments dans le tableau.*/
+
+
+printf("taille du tableau : %d \n\n", taille_tableau);
+
+for (int i=0;taille_tableau>i;i++){
+
+    printf("resident %d :",i);
+
+    scanf("%s",resident[i].nom);
+}
+
+
+for (int j=0;taille_tableau>j;j++){
+
+    printf("Nom resident %d %s \n",j,resident[j].nom);
+}
+
+
+
+
+_____________________________________________________________________________________________________________________________________________________________________________________________________________
+///LES ENUMERATIONS
+
+Les énumérations constituent une façon un peu différente de créer ses propres types de variables.
+
+Une énumération ne contient pas de sous-variables comme c'était le cas pour les structures.
+C'est une liste de valeurs possibles pour une variable. Une énumération ne prend donc qu'une case en mémoire,
+et cette case peut prendre une des valeurs que vous définissez (et une seule à la fois).
+Utile pour les mois de l'année ou les jours de la semaine par exemple.
+Tu peux également le faire prendre des valeurs (optionnel) mais que des nombres entiers !!
+
+Pour créer une énumération, on utilise le mot-clé enum.
+
+
+typedef enum Volume Volume;
+enum Volume
+{
+    FAIBLE = 15, MOYEN = 50, FORT = 80, MAX = 100
+};
+
+Volume musique = MOYEN;
+
+Un autre petit point à noter : si vous ne précisez pas la valeur d’un élément,
+elle sera forcément égale à la valeur de l'élément précédent + 1.
+
+
+
+
+
+
+
+
+____________________________________________________________________________________________________________________________________________________________________________________________________________
+///LES UNIONS (a revoir plus tard ! un peu comme une structure mais qui utilise la memoir d'une autre manière)
+
+// Définition de l'énumération pour représenter l'état d'un appareil
+typedef enum {
+    OFF,
+    ON
+} Status;
+
+// Définition de l'union pour représenter l'état d'un appareil
+union DeviceState {
+    Status status;     // Membre de l'union représentant l'état de l'appareil
+    int batteryLevel;  // Membre de l'union représentant le niveau de batterie de l'appareil
+};
+
+int main() {
+    // Création d'une variable de type union DeviceState
+    union DeviceState device;
+
+    // Affectation de l'état de l'appareil à ON
+    device.status = ON;
+
+    // Affichage de l'état de l'appareil
+    if (device.status == ON) {
+        printf("L'appareil est allumé.\n");
+    } else {
+        printf("L'appareil est éteint.\n");
+    }
+
+
+
+
+_____________________________________________________________________________________________________________________________________________________________________________________________________________________________
+/// MANIPULER DES FICHIER A L'AIDE DE FONCTIONS
+
+
+Placer par avance le fichier dans le dossier sur lequel vous travailler.
+Il est possible aussi de l'ouvrir depuis n'importe ou sur le disque.
+Mais si vous deplacer le dossier sur une autre machine alors le fichier ne suivra pas.
+
+
+
+FILE* fopen(const char* nomDuFichier, const char* modeOuverture);     FILE est une structure.
+
+fichier = fopen("C:\\Program Files\\Notepad++\\readme.txt", "r+");
+
+
+int fclose(FILE* pointeurSurFichier);                                 Pour fermer le fichier.
+
+int rename(const char* ancienNom, const char* nouveauNom);            Pour renomer le fichier.
+
+int remove(const char* fichierASupprimer);                            Pour suprimer le fichier.
+
+
+
+
+Les principaux modes d'ouverture possibles :
+
+    "r"  : lecture seule. Vous pourrez lire le contenu du fichier, mais pas y écrire. Le fichier doit avoir été créé au préalable.
+
+    "w"  : écriture seule. Vous pourrez écrire dans le fichier, mais pas lire son contenu. Si le fichier n'existe pas, il sera créé.
+
+    "a"  : mode d'ajout. Vous écrirez dans le fichier, en partant de la fin du fichier. Si le fichier n'existe pas, il sera créé.
+
+    "a+"  : ajout en lecture / écriture à la fin. Vous écrivez et lisez du texte à partir de la fin du fichier. Si le fichier n'existe pas, il sera créé.
+
+    "r+"  : lecture et écriture. Vous pourrez lire et écrire dans le fichier. Le fichier doit avoir été créé au préalable.
+
+    "w+"  : lecture et écriture, avec suppression du contenu au préalable. Si le fichier n'existe pas, il sera créé.
+
+
+
+ ///Exemple
+
+
+
+ int main() {
+
+    char chaine[taille_max] = "";
+
+    char *resultat;
+
+    FILE* fichier = fopen("Exemple.txt", "r");                            Attention ca n'ouvre pas le fichier dans le notepad !
+                                                                            Seulement ca l'ouvre pour que codeblocks puisse y avoir acces !
+
+    if (fichier != NULL) {                                                    Important !! Permet de s'assurer que le fichier a été ouvert avec succès.
+
+        int motTrouve = 0;                                                      Variable pour indiquer si le mot a été trouvé au moins une fois
+
+        while (fgets(chaine, taille_max, fichier) != NULL) {                      Les fonctions de lecture lisent char par char et ligne par ligne !
+                                                                                   Donc stv lire l'entieretée du fichier, ne t'arreres pas temps qu'il est pas à NULL.
+            resultat = strstr(chaine, mot);
+                                                                                    Si tu dois mettre un message d'erreur fais le passer par une variable en interne,
+                                                                                     Oublie pas ! compartimente ton code ! fais le taff de recherche dans un premier temps.
+            if (resultat != NULL) {
+
+                printf("%s\n\n", resultat);
+
+                motTrouve = 1;                                                        Mettre motTrouve à 1 si le mot est trouvé
+
+            }
+        }
+        long position = ftell(fichier);                                               Oublie pas de mettre la fonction à l'interieur de l'ouverture du fichier.
+
+        printf("position curseur : %ld\n",position);
+
+        if (!motTrouve) {
+
+            printf("pas trouvé");
+        }
+        fclose(fichier);                                                            Ne pas oublié de fermer le fichier après utilisation. fonction : fclose
+                                                                                   Prototype : int fclose(FILE* pointeurSurFichier);
+      system("notepad Exemple.txt");
+                                                                                 Ouvre le fichier avec notepads si fichier se trouve dans le meme dossier. Sinon :
+    } else {                                                                    system("notepad \"C:\\chemin avec des espaces\\vers\\le\\fichier\\Exemple.txt\"");
+
+        printf("Impossible d'ouvrir le fichier.\n");                          Toujours verifié la réussite ou de l'ouverture du fichier. Evite les plantage.
+    }
+
+    return 0;
+}
+
+
+/// Les Fonctions
+
+
+
+/// LIRE UN CARACTERE DANS FICHIER (fgetc)
+
+int fgetc(FILE* pointeurDeFichier);
+
+  int caractereActuel = 'A';
+
+caractereActuel = fgetc(fichier);                         Si la fonction n'a pas pu lire de caractère, elle retourne EOF.
+
+
+/// LIRE UNE CHAINE DE CARACTERES DANS FICHIER (fgets)
+
+char* fgets(char* chaine, int nbreDeCaracteresALire, FILE* pointeurSurFichier);     Fais pour lire une ligne de texte. s'arrete au moment le texte est coupé.
+
+while (fgets(chaine, TAILLE_MAX, fichier) != NULL)                                   On lit le fichier tant qu'on ne reçoit pas d'erreur (NULL)
+
+printf("%s", chaine);                                                                On affiche la chaîne qu'on vient de lire
+
+
+/// LIRE UN FICHIER COMPLET (fread)
+
+size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream);
+
+(fread(chaine,1,taille_max,fichier)!=NULL)
+
+ptr: Pointeur vers la zone de mémoire où les données lues seront stockées.
+
+size: Taille en octets de chaque élément à lire.
+
+nmemb: Nombre d'éléments à lire.
+
+stream: Pointeur vers le flux à partir duquel les données seront lues
+
+
+
+/// LIRE UNE CHAINE FORMATER (fscanf)
+
+int score[3] = {0};                                                Tableau des 3 meilleurs scores
+
+fscanf(fichier, "%d %d %d", &score[0], &score[1], &score[2]);
+
+printf("Les scores sont : %d, %d et %d", score[0], score[1], score[2]);
+
+
+/// ECRIRE UN CARACTERE DANS FICHIER (fputs)
+
+int fputc(int caractere, FILE* pointeurSurFichier);
+
+fputc('A', fichier);                                             Écriture du caractère A
+
+
+/// ECRIRE UNE DE CARACTERES DANS FICHIER (fputs)
+
+char* fputs(const char* chaine, FILE* pointeurSurFichier);                          Prend simplement une chaîne de caractères en entrée.
+
+fputs("Salut les bg !", fichier);                                                   Ne permet pas de spécifier de format pour les données.
+
+La fonction renvoie EOF s'il y a eu une erreur
+
+
+/// ECRIRE UNE CHAINE FORMATER DANS FICHIER (fprintf)
+
+char *name = "love";                                                                Utilisé pour écrire des données formatées dans un fichier.
+
+fprintf(fichier, "HELLO WORLD my name is %s ans", name);                            Prend un format spécifié et une liste d'arguments.
+
+
+
+/// Le curseurs
+
+long ftell(FILE* pointeurSurFichier);                                                Renvoie la position actuelle du curseur.
+
+void rewind(FILE* pointeurSurFichier);                                               Replace le curseur au début du fichier.
+
+int fseek(FILE* pointeurSurFichier, long deplacement, int origine);                  Permet de déplacer le curseur.
+
+
+
+Il est possible de mettre comme valeur à origine Une des trois constantes listées ci-dessous :
+
+    SEEK_SET  : indique le début du fichier.                   ex: fseek(fichier, 25, SEEK_SET);
+
+    SEEK_CUR  : indique la position actuelle du curseur.       ex: fseek(fichier, -47, SEEK_CUR);
+
+    SEEK_END  : indique la fin du fichier.                     ex: fseek(fichier, 0, SEEK_END);
+
+
+
+
