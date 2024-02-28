@@ -12,6 +12,26 @@ ________________________________________________________________________________
 ///PROGRAMATION MODULAIRE
 
 
+
+
+///petit cours sur les arguments à prevoir !!
+
+
+int main(int argc, char *argv[]) {
+
+    printf("Nombre total d'arguments : %d\n", argc);
+
+                                                        // Afficher tous les arguments
+    for (int i = 0; i < argc; i++) {
+        printf("Argument %d : %s\n", i, argv[i]);
+    }
+
+    return 0;
+}
+
+
+
+
 Il y a deux types de fichiers différents :
 
     .h : Les fichiers header, ils contiennent les prototypes des fonctions.
@@ -418,7 +438,7 @@ ctrl+shift+c = tout ce qui est sélectionner en commentaire d'une ligne
 
 
 ____________________________________________________________________________________________________________________________________________________________________________________________________
-/// LES VARIALBES ET SPECIFICATEURS DE FORMAT (DRAPEAUX):
+/// LES VARIALBES, SPECIFICATEURS DE FORMAT (DRAPEAUX) ET L'ALLOCATION DYNAMIQUE DE LA MEMOIRE :
 
 
 
@@ -467,6 +487,53 @@ Taille de char : 1 octets                    printf("Taille de char : %lu octets
 Taille de float : 4 octets                   printf("Taille de float : %lu octets\n", sizeof(float));
 Taille de double : 8 octets                  printf("Taille de double : %lu octets\n", sizeof(double));
 Taille de long double : 16 octets            printf("Taille de long double : %lu octets\n", sizeof(long double));
+
+
+
+
+/// ALLOCATION DYNAMIQUE DE LA MEMOIRE :
+
+
+
+  void *malloc(size_t nombreOctetsNecessaires);                      La fonction malloc renvoie un pointeur sur la premiere adresse du tableau.
+
+  void *realloc(void *ptr, size_t nouvelle_taille);                   Marche casisment pareille juste prend en compte le tableau quelle doit réalouer en plus (void *ptr).
+
+    int nbrDeCase = 0;                                                  Size_t est un type de variable qui prend en compte un nombre entier d'octets.
+
+    printf("combiens de case tu veux ? \n\n");
+
+    scanf("%d",&nbrDeCase);
+
+    printf("\n\n");
+
+
+  int *testMemoire = malloc(nbrDeCase * sizeof(int));                          Sizeof est une fonction qui calcul un type de variable ! ici nbrDeCase est multiplié
+                                                                                par la taille de (int) qui est calculé grace à (sizeof)!
+
+    if (testMemoire == NULL) {                                                   Vérifier si l'allocation a réussi !!
+        printf("Erreur : Impossible d'allouer de la mémoire.\n");
+        return 1;                                                                Quitte la fonction et renvoie un code d'erreur(1). Ici ca quitte également le programme.
+    }
+    for (int i =0; i<nbrDeCase; i++)                                             La fonction exit(0) marche pareille mais elle, à la difference, quitte le programme meme
+    {                                                                           si d'autres fonction reste à executer.
+        printf("valeur de case N %d\n",i+1);
+
+        scanf("%d",&testMemoire[i]);
+    }
+    for (int i =0; i<nbrDeCase; i++)
+    {
+        printf("\n valeur de case N°%d = %d\n",i+1,testMemoire[i]);
+    }
+
+    free(testMemoire);                                                   Ne pas oublié de liberer la mémoire, une fois que les données stockées ne sont plus utilisées.
+                                                                       void free(void *pointeur);
+
+
+///Bonus (a réetudié)
+
+void *calloc(size_t nmemb, size_t taille);                          calloc() est une fonction qui alloue dynamiquement un bloc de mémoire
+                                                                 pour un tableau de plusieurs éléments, initialisant tous les bits à zéro.
 
 
 
@@ -797,6 +864,7 @@ s'attend à recevoir une adresse mémoire où stocker la valeur saisie, pas la vale
 #include <stdio.h>
 
 void ft_ultimate_ft(int *********nbr) {
+
     *********nbr = 42; // Affecte la valeur 42 à l'entier pointé par nbr
 }
 
@@ -1555,5 +1623,212 @@ Il est possible de mettre comme valeur à origine Une des trois constantes listée
     SEEK_END  : indique la fin du fichier.                     ex: fseek(fichier, 0, SEEK_END);
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+_______________________________________________________________________________________________________________________________________________________________________________________________________________________
+///SECURISER LA SAISIE DE TEXTE !
+
+
+Le "buffer" est une zone mémoire qui reçoit directement l'entrée clavier (stdin)
+qui sert d'intermédiaire entre le clavier et votre tableau de stockage.
+
+Lorsque tu donne trop de caractere à lire à une chaine qui peut pas tout
+contenir, le reste de caracteres reste dans le tampon ! buffer overflow*/
+
+
+///La filtration des char dans scanf (a completer)
+
+Limité le type et nombres de caracteres accepté dans le tampon.
+
+c'est la filtration des caracteres possiblement admis dans scanf (à étudié plus tard)
+
+scanf("%[abc]s",lettrePossible); scanf("%[^def]s",lettrePasPossible);
+
+scanf("%[A-Z]s",lettreMajuscule); scanf("%[0-9]s",queLesChiffres);
+
+
+
+
+
+
+///Les Differente manières de vider le tampon
+
+petit disclaimer, si le tampon est déjà vide, certaine fonction peuvent faire beugué le code.
+
+
+
+On commence facile, la fonction qui vide le tampon de sortie.
+ATTENTION !!! a utilisé exclusivement sur les flux de sortie !
+
+int fflush(FILE *stream); //permet de fluidifier la lecture du code par la machine.
+
+renvoie un 0 en cas de succes, valeur differente de zero en cas d'erreur.
+
+
+
+Bon..La partie un peu plus technique.. Vider le tampon d'entrée.
+
+Plusieurs options Je rentrerai pas dans les détails mais la premiere à ses failles (pas de EOF nottament)
+Bon la deuxieme doit surrement en avoir aussi mais probablement moins.
+
+
+Version simple.. Un peu barbare
+
+while (getchar() != '\n');
+
+La boucle while ici est un peu spécial dans son utilisation, elle s'éxecute jusqu'a trouvé le
+caractere de nouvelle ligne \n. Elle a un point virgule sans acolade, elle n'éxecute rien. seulement
+une fois que la condition est fausse elle passe à autre chose. Comprends que par défaut getchar est une
+fonction qui lit un caractere sur l'entrée : stdin (clavier user). elle s'arrete (quand elle devient fausse)
+que quand le char de fin de ligne apararrait !
+Chaque fois qu'un char est lu, il sort par la meme occasion du tampon y a pas à le suprimmer ou jspq.
+
+Version plus élaborer ! le mieux c'est d'en faire une fonction c'est magnifique après !
+
+int c;
+while ((c = getchar()) != '\n' && c != EOF){
+
+    {
+Dans cette boucle, on stocke chaque caractère lu dans la variable c,
+puis on teste si ce caractère est un retour à la ligne ('\n') ou la fin de fichier (EOF).
+Si ce n'est pas le cas, la boucle continue de consommer les caractères.
+
+Cette méthode permet de traiter chaque caractère lu individuellement et
+peut être utile si vous devez effectuer des opérations sur chaque caractère du tampon.
+
+
+Ca c'est fonction pure qui vide le tampon, que tu vas intégrer dans une autre fonction (voir plus bas)
+
+void viderBuffer()
+{
+    int c = 0;
+    while (c != '\n' && c != EOF)
+    {
+        c = getchar();
+    }
+}
+
+
+
+
+///Exemple à suivre
+
+La derniere version c'est the Ultimate ! tu crées ta propre fonction de lecture de données personalisés !
+Ta fonction lis les données, les filtres, remplace le char de fin de ligne \n par le char de fin de chaine \0.
+Et vide le buffer dans tout les cas.
+
+int lire (char *chaine, int longueur)
+{
+
+    char *charAchanger = NULL;                  // Pointeur pour pointer le char de fin de ligne.
+
+    if (fgets(chaine,longueur,stdin)!=NULL){    // ON l'appele direct dans un if (voir return 0).
+
+       charAchanger = strchr(chaine, '\n');     // Recherche du fameux char \n
+
+        if (charAchanger!=NULL){                // Si trouvé on le remplace par le char
+                                                // de fin de chaine \0.
+            *charAchanger = '\0';               // Ca permet de suprimé le \n qui entre dans le
+        }                                       // tampon quand on appuie sur la touche entrée.
+        else{                                   // Sans ca, lors de la lecture il y aura un saut de ligne.
+            viderBuffer();
+        }                                       // Si la chaine est trop longue alors pas il n'y a pas de caractere
+        return 1;                               // de fin de chaine dans le tampon, donc si charAchanger != \n
+    }                                           // alors char =NULL donc vidage du tampon + code erreur (return 1).
+    else
+        {
+      viderBuffer();                            // Si pas de lecture de chaine, vide le buffer et renvoie 0.
+      return 0;
+ }
+}
+
+
+
+
+
+///Utilisée la fonction de lecture dans une autre fonction pour de la saisie de nombre.
+
+Putain ce que c'est long.. long t'as capté lol ! Bon en gros l'idée cest que pour manipuler des nombres  après les avoir récuperer
+Dans une fonction de lecture de texte (comme notre fonction lire) il vaut mieux utiliser certaine fonction plus sécu qui prennent
+En compte certain argument pas dégueu. on va donc crée une fonction qui mix la fonction de lecture + notre fonction de traduction.
+
+//Il faudra utiliser la fonction long strtol
+
+long strtol( const char *start, char **end, int base );
+
+
+
+
+//Marche aussi avec un décimal en retour
+
+double strtod( const char *start, char **end );
+
+Contrairement à strtol, la fonction prend cette fois en compte le point décimal.
+Remplacez la virgule par un point dans la chaîne de texte lue (grâce à la fonction de recherche strchr).
+Puis envoyez la chaîne modifiée à strtod.
+
+
+creation de la fonction perso.
+
+
+long lireLong()
+{
+    char *lettre = NULL;
+
+    char nombreTexte[100] = {0};                   // La fonction prend en compte la fonction lire qui elle prend
+                                                   // en compte du texte (ici des nombres mais sous formes de char)
+    if (lire(nombreTexte, 100))                    // Si lecture du texte ok, alors la fonction
+    {                                              // strtol converti le nombre(textes), en base 10
+    return strtol(nombreTexte, &lettre, 10);       // et renvoie le nombre sous forme de long avec son return.
+    }
+    else                                           // Le pointeur end prend en compte un pointeur qui lui meme va pointer sur
+    {                                              // le premier char du texte trouvé après lecture de nombre. ici on s'en branle
+    return 0;                                      // Sa sert pour récuperer de la data sur la chaine je pense ?? (je l'ai mis pour l'ex)
+                                                   // Si problème de lecture, renvoyer 0
+    }
+}
+
+///Le Main.c au cas ou t'es un peu perdu mdrrr
+
+
+int main(int argc, char *argv[]) {
+
+char prenom[10];
+
+long age;
+
+int ret2;
+
+printf("donne ton prenom ?\n ");
+
+ret2 = lire(prenom,10);
+
+printf("donne ton age ? ");
+
+age = lireLong();
+
+
+printf("\n\n");
+
+printf("prenom : %s !\n",prenom);
+printf("age : %ld ans !\n\n", age);
+printf("retour prenom : %d\n",ret2);
+
+
+return 0;
+}
 
 
