@@ -508,7 +508,7 @@ Taille de long double : 16 octets            printf("Taille de long double : %lu
     printf("\n\n");
 
 
-  int *testMemoire = malloc(nbrDeCase * sizeof(int));                          Sizeof est une fonction qui calcul un type de variable ! ici nbrDeCase est multiplié
+  int *testMemoire = malloc(nbrDeCase * sizeof(int));                          Sizeof est une fonction qui calcul la taille en octets ! ici nbrDeCase est multiplié
                                                                                 par la taille de (int) qui est calculé grace à (sizeof)!
 
     if (testMemoire == NULL) {                                                   Vérifier si l'allocation a réussi !!
@@ -1050,8 +1050,8 @@ chaine[7] = '!';
 chaine[8] = '\0'; //le \0 permet au programme de savoir quand s'arreter ! voit le tableau fait 14 adresse !! oublie pas de rajouter à chaque fois une ligne
                          //de plus dans ton tableau pour inclure ce caractere de fin !! très important !!
 
-printf("%s \n",chaine);   //important d'allouer la bon nombre d'adresse nécessaire pour la chaine de caractères ! sinon programme fais nimp !!
-                          //ou sinon tu peux juste ne rien mettre ! pour une fois le programme le fais très bien tout seul ! comme en dessous !
+printf("%s \n",chaine);   //important d'allouer la bon nombre d'adresse nécessaire pour la chaine de caractères ! sinon probleme memoire !!
+                          //ou sinon tu peux juste ne rien mettre si tu déclare la chaine de characteres directement !
 
 char chaine2[] = "Re bonjour gros bg \n"; //un caractère unique sera entre apostrophes et une chaine de caractères entre guillemet !!
 
@@ -1072,7 +1072,7 @@ printf("%s \n",chaine2);      //ou utilise ceci : %[^\n]  par contre la tu dois 
 
 ///Calculer la longueur d'une chaine avec "strlen" (string length)
 
-size_t strlen(const char* chaine); //size_t est une fonction inventé qui donne la taille de truc..
+size_t strlen(const char* chaine); //Size_t est un type de variable qui prend en compte un nombre entier d'octets.
 
 strlen(chaine2);                                                                         les TABLEAU, LES POINTEURS ET LES CHAINES DE CARACTERES utilise tout les trois
                                                                                         le systeme de pointeur !!! voilà pourquoi les fonctions faisant appele à eux
@@ -1587,7 +1587,7 @@ int fputc(int caractere, FILE* pointeurSurFichier);
 fputc('A', fichier);                                             Écriture du caractère A
 
 
-/// ECRIRE UNE DE CARACTERES DANS FICHIER (fputs)
+/// ECRIRE UNE CHAINE DE CARACTERES DANS FICHIER (fputs)
 
 char* fputs(const char* chaine, FILE* pointeurSurFichier);                          Prend simplement une chaîne de caractères en entrée.
 
@@ -1646,7 +1646,7 @@ Le "buffer" est une zone mémoire qui reçoit directement l'entrée clavier (stdin)
 qui sert d'intermédiaire entre le clavier et votre tableau de stockage.
 
 Lorsque tu donne trop de caractere à lire à une chaine qui peut pas tout
-contenir, le reste de caracteres reste dans le tampon ! buffer overflow*/
+contenir, le reste de caracteres reste dans le tampon ! buffer overflow
 
 
 ///La filtration des char dans scanf (a completer)
@@ -1667,23 +1667,18 @@ scanf("%[A-Z]s",lettreMajuscule); scanf("%[0-9]s",queLesChiffres);
 ///Les Differente manières de vider le tampon
 
 petit disclaimer, si le tampon est déjà vide, certaine fonction peuvent faire beugué le code.
-
-
+//il faudra taper une touche random pour activer la fonction.
 
 On commence facile, la fonction qui vide le tampon de sortie.
 ATTENTION !!! a utilisé exclusivement sur les flux de sortie !
 
 int fflush(FILE *stream); //permet de fluidifier la lecture du code par la machine.
-
-renvoie un 0 en cas de succes, valeur differente de zero en cas d'erreur.
-
+//renvoie un 0 en cas de succes, valeur differente de zero en cas d'erreur.
 
 
 Bon..La partie un peu plus technique.. Vider le tampon d'entrée.
-
-Plusieurs options Je rentrerai pas dans les détails mais la premiere à ses failles (pas de EOF nottament)
-Bon la deuxieme doit surrement en avoir aussi mais probablement moins.
-
+//Plusieurs options je rentrerai pas dans les détails mais la premiere à ses failles (pas de EOF nottament)
+//Bon la deuxieme doit surrement en avoir aussi mais probablement moins.
 
 Version simple.. Un peu barbare
 
@@ -1708,7 +1703,6 @@ Si ce n'est pas le cas, la boucle continue de consommer les caractères.
 
 Cette méthode permet de traiter chaque caractère lu individuellement et
 peut être utile si vous devez effectuer des opérations sur chaque caractère du tampon.
-
 
 Ca c'est fonction pure qui vide le tampon, que tu vas intégrer dans une autre fonction (voir plus bas)
 
@@ -1765,11 +1759,9 @@ Putain ce que c'est long.. long t'as capté lol ! Bon en gros l'idée cest que pou
 Dans une fonction de lecture de texte (comme notre fonction lire) il vaut mieux utiliser certaine fonction plus sécu qui prennent
 En compte certain argument pas dégueu. on va donc crée une fonction qui mix la fonction de lecture + notre fonction de traduction.
 
-//Il faudra utiliser la fonction long strtol
+Il faudra utiliser la fonction long strtol qui caste des nombres de type char en nombre de type long.
 
 long strtol( const char *start, char **end, int base );
-
-
 
 
 //Marche aussi avec un décimal en retour
