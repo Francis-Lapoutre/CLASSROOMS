@@ -269,6 +269,7 @@ int main(int argc, char *argv[]) //equivalent de int main ()
 
 int fonction (int longeur, int largeur)
    {
+
     return longeur * largeur;
    }
 
@@ -493,11 +494,51 @@ Taille de long double : 16 octets            printf("Taille de long double : %lu
 
 /// ALLOCATION DYNAMIQUE DE LA MEMOIRE :
 
+La fonction malloc alloue de la mémoire à votre programme et renvoie un pointeur à l'adresse de ce bloc de mémoire.
 
 
-  void *malloc(size_t nombreOctetsNecessaires);                      La fonction malloc renvoie un pointeur sur la premiere adresse du tableau.
 
-  void *realloc(void *ptr, size_t nouvelle_taille);                   Marche casisment pareille juste prend en compte le tableau quelle doit réalouer en plus (void *ptr).
+  void *malloc(size_t nombreOctetsNecessaires);        La fonction malloc renvoie un pointeur sur la premiere adresse mémoire alloué pour la variable.
+
+
+
+///Atribution de mémoire pour un tableau simple
+
+int *tableau = NULL;
+
+int nbrColones = 0;
+
+printf("nombre de colones ? \n");
+
+scanf("%d",&nbrColones);
+
+tableau = malloc(nbrColones * sizeof(tableau));
+
+if (tableau == NULL){                                  //ne pas oublié de tester l'atribution d'une adresse mémoire au pointeur.
+    exit(0);
+}
+
+printf("nombre de colones : %d \n\n",nbrColones);
+
+
+for(int i = 0; i<nbrColones; i++){
+
+    tableau[i] = i + 1;
+
+    printf("colone %d : %d \n",i+1,tableau[i]);
+}
+
+free(tableau);                                        //pas oublier de libérer l'espace mémoire alloué à l'adresse dans le tas
+
+
+
+  void *realloc(void *ptr, size_t nouvelle_taille);                  Marche casisment pareille juste prend en compte le tableau quelle doit réalouer en plus (void *ptr).
+
+  void *calloc(size_t nmemb, size_t taille);
+
+
+
+
 
     int nbrDeCase = 0;                                                  Size_t est un type de variable qui prend en compte un nombre entier d'octets.
 
@@ -530,10 +571,6 @@ Taille de long double : 16 octets            printf("Taille de long double : %lu
                                                                        void free(void *pointeur);
 
 
-///Bonus (a réetudié)
-
-void *calloc(size_t nmemb, size_t taille);                          calloc() est une fonction qui alloue dynamiquement un bloc de mémoire
-                                                                 pour un tableau de plusieurs éléments, initialisant tous les bits à zéro.
 
 
 
@@ -579,10 +616,6 @@ division = 25 / 5
       "||" est "ou"         "!=" est différent de
 
 ATTENTION !! L'opérateur = est utilisé pour attribuer une valeur à une variable !! A PAS UTILISER POUR TESTER UNE EGALITE !!
-
-
-      pour les conditions en && et || retiens si je dis pas de connerie.. que pour les nombre compris entre 2 valeurs,
-      on utilisera && et pour les nombres qui ne sont pas compris entre ces 2 valeurs on utilisera ||
 
 
 
@@ -796,6 +829,10 @@ Un pointeur est une variable qui stock l'adresse memoire d'une autre variable.
 Cela permet le transfer, la modification et l'extraction de valeur dans des fonction qui prennent en compte des pointeurs.
 Ce qui est impossible sans pointeur ! Au mieux return peut renvoyer qu'une seul valeur.
 
+Lorsque tu déclare un pointeur sans lui atribué d'adresse dans un premier temps, donne lui "NULL" comme valeur.
+
+int *eXemPle = NULL;
+
 
 int nombre = 2;
 
@@ -983,10 +1020,6 @@ printf("la somme des valeurs du tableau est de : %d \n",sommetableau(tableaudebg
 
 
 
-
-
-
-
 double moyenneTableau(int tableau[], int tailleTableau) //Le changement de type de variable au sein d'une fonction, est appelé "cast" ou "conversion de type".
 {                                                      //Plus précisément, (double)somme et (double)tailleTableau sont des castings qui convertissent
                                                       //la valeur de somme et tailleTableau en valeurs de type double. tres utiles pour la division notament !
@@ -1001,13 +1034,75 @@ printf("la moyenne des valeurs du tableau est de : %lf \n",moyenneTableau(tablea
 
 
 
+///Tableau en deux dimmensions
+
+int tableau[ROWS][COLS];
+
+int compteur =1;
+
+  for(int i = 0; i < ROWS; i++){                          //la boucle rows se place sur la première rangée
+
+     for (int j = 0; j < COLS; j++){                       //la boucle cols execute toute les colones de celle-ci
+
+     tableau[i][j] = compteur ++;
+
+     printf("%3d  ",tableau[i][j]);
 
 
+     }
+    printf("\n\n");
+  }
 
 
+///Tableau en trois dimmensions + malloc
 
+    int ***tableau3D = NULL;
+    int compteur = 1;
 
+    // Allocation de mémoire pour la première dimension
+    tableau3D = malloc(ROWS * sizeof(int **));
 
+    if (tableau3D == NULL) {  //n'oublie jamais de faire les tests d'allocation mémoire !!
+        printf("Erreur d'allocation de mémoire pour la première dimension\n");
+        exit(EXIT_FAILURE);
+    }
+
+    // Allocation de mémoire pour les deuxième et troisième dimensions
+    for (int i = 0; i < ROWS; i++) {
+        tableau3D[i] = malloc(COLS * sizeof(int *));
+        if (tableau3D[i] == NULL) {
+            printf("Erreur d'allocation de mémoire pour la deuxième dimension\n");
+            exit(EXIT_FAILURE);
+        }
+        for (int j = 0; j < COLS; j++) {
+            tableau3D[i][j] = malloc(DEPS * sizeof(int));
+            if (tableau3D[i][j] == NULL) {
+                printf("Erreur d'allocation de mémoire pour la troisième dimension\n");
+                exit(EXIT_FAILURE);
+            }
+        }
+    }
+
+    // Remplissage et affichage du tableau
+    for (int i = 0; i < ROWS; i++) {
+        for (int j = 0; j < COLS; j++) {
+            for (int k = 0; k < DEPS; k++) {
+                tableau3D[i][j][k] = compteur++;
+                printf("%3d ", tableau3D[i][j][k]);
+            }
+            printf("\n");
+        }
+        printf("\n");
+    }
+
+    // Libération de la mémoire
+    for (int i = 0; i < ROWS; i++) {
+        for (int j = 0; j < COLS; j++) {
+            free(tableau3D[i][j]);
+        }
+        free(tableau3D[i]);
+    }
+    free(tableau3D);
 
 
 
@@ -1061,7 +1156,7 @@ char chaine2[] = "Re bonjour gros bg \n"; //un caractère unique sera entre apost
 
  printf("insert un compliment ! \n\n ");
 
-scanf(" %[^\n]",&chaine2);  // l'espace avant le %s n'est pas nécessaire car %s ignore automatiquement les caractères blancs avant de lire la chaîne de caractères.
+scanf(" %[^\n]",chaine2);  // l'espace avant le %s n'est pas nécessaire car %s ignore automatiquement les caractères blancs avant de lire la chaîne de caractères.
                       //le scanf arrete sa lecture de caracteres au premier espace, tabulation ou autre je ne sais quoi ! du coup utilise _ pour les espace !
 printf("%s \n",chaine2);      //ou utilise ceci : %[^\n]  par contre la tu dois mettre un espace avant le % !!!
 
@@ -1119,10 +1214,6 @@ char chaine3[]= {0}; //version propre !!
 strcpy(chaine3,chaine);
 
 printf(" %s %s :",chaine,chaine3);
-
-
-
-
 
 
 
@@ -1266,6 +1357,20 @@ int age = 27;         ///ATENTION SPRINTF REMPLACE LE TEXTE EXISTANT DANS LA CHA
 sprintf(chaine1, "%s tu viens d'avoir %d",chaine2,age); //ici sprintf prend en compte la chaine (chaine1) dans laquellle il va écrire.
                                    //ensuite, comme dans un printf, tu peux y ajouter ce qu'il te chante !!
 printf("%s",chaine1);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
